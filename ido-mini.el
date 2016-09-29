@@ -19,6 +19,24 @@
 ;;            bufs-with-paths)))
 ;;     (switch-to-buffer (nth chosen-index bufs))))
 
+(defvar im/use-paths nil
+  "If non-nil, display file paths of the associated files of
+buffers, where applicable (see function `im/add-paths').
+Additionally, completion will search for buffer names as well as
+their file paths.
+
+Users may also find it useful to set this to nil and to enable
+buffer uniquifying via `toggle-uniquify-buffer-names'.")
+(defvar im/buffer-list-functions nil
+  "List of functions run sequentially over the output
+of `(buffer-list)', with the result of one being the input of the
+next (using `->list'). Each should accept exactly one argument.")
+(defvar im/recentf-list-functions nil
+  "List of functions run sequentially over `recentf-list', with
+the result of one being the input of the next (using `->list').
+Each should accept exactly one argument.")
+
+
 (defun im/buffer-names ()
   "Return a list of the name of all buffers returned
 by (buffer-list)."
@@ -100,15 +118,6 @@ visited by a buffer placed at the end of the list."
 
 ;; add variables to
 ;; - toggle displaying paths with buffer names
-
-(defvar im/use-paths nil
-  "If non-nil, display file paths of the associated files of
-buffers, where applicable (see function `im/add-paths').
-Additionally, completion will search for buffer names as well as
-their file paths.
-
-Users may also find it useful to set this to nil and to enable
-buffer uniquifying via `toggle-uniquify-buffer-names'.")
 
 (defun im/add-paths (&optional buflist)
   "Add paths to a list of buffer names. If BUFLIST is nil or
