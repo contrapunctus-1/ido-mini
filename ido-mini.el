@@ -19,35 +19,35 @@
 ;;            bufs-with-paths)))
 ;;     (switch-to-buffer (nth chosen-index bufs))))
 
-(defun cp/buffer-names ()
+(defun im/buffer-names ()
   "Return a list of the name of all buffers returned
 by (buffer-list)."
   (-map 'buffer-name (buffer-list)))
 
-;; (defun cp/buffer-dc-alist ()
+;; (defun im/buffer-dc-alist ()
 ;;   "Return an alist of buffer names and buffer-display-count
 ;; values."
-;;   (-zip (cp/buffer-names)
+;;   (-zip (im/buffer-names)
 ;;         (--map (with-current-buffer it
 ;;                  buffer-display-count)
 ;;                (buffer-list))))
-;; (defun cp/buffer-dc-alist-sorted ()
-;;   "Return alist created by `cp/buffer-dc-alist', sorted by
+;; (defun im/buffer-dc-alist-sorted ()
+;;   "Return alist created by `im/buffer-dc-alist', sorted by
 ;;   buffer-display-count values."
 ;;   (--sort (> (cdr it) (cdr other))
-;;           (cp/buffer-dc-alist)))
-;; (defun cp/buffer-list-dc-sorted ()
+;;           (im/buffer-dc-alist)))
+;; (defun im/buffer-list-dc-sorted ()
 ;;   "Like `buffer-list' but sorted by buffer-display-count
 ;;   values."
-;;   (-map 'car (cp/buffer-dc-alist-sorted)))
+;;   (-map 'car (im/buffer-dc-alist-sorted)))
 
-(defun cp/ido-sort-buffer-list ()
+(defun im/sort-buffer-list ()
   "Return a list of buffer names using (buffer-list), processed
 the way ido-switch-buffer does."
   (cl-flet ((leading-space-p
              (el)
              (string-match-p "^ " el)))
-    (let* ((bufs (cp/buffer-names))
+    (let* ((bufs (im/buffer-names))
 
            ;; Remove buffers whose names start with a space
            (bufs-main       (-remove #'leading-space-p
@@ -66,7 +66,7 @@ the way ido-switch-buffer does."
        (-map 'car bufs-wo-wins)
        (reverse (-map 'car bufs-with-wins))))))
 
-(defun cp/ido-mini-recentf-list ()
+(defun im/recentf-list ()
   "Returns the contents of `recentf-list', with files being
 visited by a buffer placed at the end of the list."
   (append
@@ -91,41 +91,41 @@ visited by a buffer placed at the end of the list."
 ;; add variables to
 ;; - toggle displaying paths with buffer names
 
-(defvar cp/ido-mini-use-paths nil
+(defvar im/use-paths nil
   "If non-nil, display file paths of the associated files of
-buffers, where applicable (see function `cp/ido-mini-add-paths').
+buffers, where applicable (see function `im/add-paths').
 Additionally, completion will search for buffer names as well as
 their file paths.
 
 Users may also find it useful to set this to nil and to enable
 buffer uniquifying via `toggle-uniquify-buffer-names'.")
 
-(defun cp/ido-mini-add-paths (&optional buflist)
+(defun im/add-paths (&optional buflist)
   "Add paths to a list of buffer names. If BUFLIST is nil or
-omitted, use output from cp/ido-sort-buffer-list."
-  (let ((bufs (if buflist buflist (cp/ido-sort-buffer-list))))
-    (if cp/ido-mini-use-paths
+omitted, use output from im/sort-buffer-list."
+  (let ((bufs (if buflist buflist (im/sort-buffer-list))))
+    (if im/use-paths
         (--map (with-current-buffer it
                  (if (buffer-file-name)
                      (format "%s <%s>" (buffer-name) (buffer-file-name))
                    (buffer-name)))
-               (cp/ido-sort-buffer-list))
+               (im/sort-buffer-list))
       bufs)))
 
-(defun cp/ido-mini-color-recentf ()
-  "Color output from cp/ido-mini-recentf-list."
+(defun im/color-recentf ()
+  "Color output from im/recentf-list."
   (-map (lambda (el)
           (propertize el 'face 'ido-virtual))
         ;; recentf-list
-        (cp/ido-mini-recentf-list)))
+        (im/recentf-list)))
 
-(defun cp/ido-mini-color-buffer-names ()
+(defun im/color-buffer-names ()
   ""
   (-map (lambda (buffer)
           (if (buffer-modified-p)
               (propertize buffer 'face 'ido-indicator)))))
 
-;; (defun cp/ido-mini-clean)
+;; (defun im/clean)
 
 ;; pipeline
 
@@ -135,12 +135,12 @@ omitted, use output from cp/ido-sort-buffer-list."
 ;;                                                            /
 ;; (buffer-list) -> buffer names -> sort -> add paths -> color
 ;;                       |           |         |
-;;                (cp/buffer-names)  |  (cp/ido-mini-add-paths)
-;;                        (cp/ido-sort-buffer-list)
+;;                (im/buffer-names)  |  (im/add-paths)
+;;                        (im/sort-buffer-list)
 
-(defun cp/ido-mini ()
+(defun ido-mini ()
   "A helm-mini replacement using Ido. Switch to a buffer or a
-recentf entry with ido. If `cp/ido-mini-use-paths' is non-nil,
+recentf entry with ido. If `im/use-paths' is non-nil,
 search for and display the whole file path instead of just the
 file name.
 
@@ -150,9 +150,9 @@ Based off code from wilfredh -
 https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
   (interactive)
   (let*
-      ((bufs                 (cp/ido-sort-buffer-list))
-       (bufs-with-paths      (cp/ido-mini-add-paths bufs))
-       (recentf-list-colored (cp/ido-mini-color-recentf))
+      ((bufs                 (im/sort-buffer-list))
+       (bufs-with-paths      (im/add-paths bufs))
+       (recentf-list-colored (im/color-recentf))
        (bufs-and-recentf     (append bufs-with-paths
                                      recentf-list-colored))
        (chosen-index
@@ -168,9 +168,9 @@ https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
         (switch-to-buffer (nth chosen-index
                                bufs))
       (find-file (nth (- chosen-index (length bufs))
-                      (cp/ido-mini-recentf-list))))))
+                      (im/recentf-list))))))
 
-(global-set-key (kbd "C-x C-l") 'cp/ido-mini)
+(global-set-key (kbd "C-x C-l") 'ido-mini)
 (ido-vertical-mode 1)
 
 ;; is this being saved by desktop.el and actually being disabled here?
