@@ -24,6 +24,16 @@
 by (buffer-list)."
   (-map 'buffer-name (buffer-list)))
 
+(defun ->list (var functions)
+  "Assuming FUNCTIONS is a list of functions (FN1 FN2 FN3),
+return the result of (FN3 (FN2 (FN1 VAR)))"
+  (dolist (fn functions)
+    (setq var (funcall fn var)))
+  var)
+;; (->list 1 '((lambda (a) (+ a 1))
+;;             (lambda (a) (+ a 2))
+;;             (lambda (a) (+ a 3)))) ;; => 7
+
 ;; (defun im/buffer-dc-alist ()
 ;;   "Return an alist of buffer names and buffer-display-count
 ;; values."
