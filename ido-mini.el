@@ -19,6 +19,23 @@
 ;;            bufs-with-paths)))
 ;;     (switch-to-buffer (nth chosen-index bufs))))
 
+;; (defun im/buffer-dc-alist ()
+;;   "Return an alist of buffer names and buffer-display-count
+;; values."
+;;   (-zip (im/buffer-names)
+;;         (--map (with-current-buffer it
+;;                  buffer-display-count)
+;;                (buffer-list))))
+;; (defun im/buffer-dc-alist-sorted ()
+;;   "Return alist created by `im/buffer-dc-alist', sorted by
+;;   buffer-display-count values."
+;;   (--sort (> (cdr it) (cdr other))
+;;           (im/buffer-dc-alist)))
+;; (defun im/buffer-list-dc-sorted ()
+;;   "Like `buffer-list' but sorted by buffer-display-count
+;;   values."
+;;   (-map 'car (im/buffer-dc-alist-sorted)))
+
 (defvar im/use-paths nil
   "If non-nil, display file paths of the associated files of
 buffers, where applicable (see function `im/add-paths').
@@ -52,22 +69,6 @@ return the result of (FN3 (FN2 (FN1 VAR)))"
 ;;             (lambda (a) (+ a 2))
 ;;             (lambda (a) (+ a 3)))) ;; => 7
 
-;; (defun im/buffer-dc-alist ()
-;;   "Return an alist of buffer names and buffer-display-count
-;; values."
-;;   (-zip (im/buffer-names)
-;;         (--map (with-current-buffer it
-;;                  buffer-display-count)
-;;                (buffer-list))))
-;; (defun im/buffer-dc-alist-sorted ()
-;;   "Return alist created by `im/buffer-dc-alist', sorted by
-;;   buffer-display-count values."
-;;   (--sort (> (cdr it) (cdr other))
-;;           (im/buffer-dc-alist)))
-;; (defun im/buffer-list-dc-sorted ()
-;;   "Like `buffer-list' but sorted by buffer-display-count
-;;   values."
-;;   (-map 'car (im/buffer-dc-alist-sorted)))
 
 (defun im/sort-buffer-list ()
   "Return a list of buffer names using (buffer-list), processed
