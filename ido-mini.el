@@ -188,9 +188,3 @@ https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
                                bufs))
       (find-file (nth (- chosen-index (length bufs))
                       (im/recentf-list))))))
-
-(global-set-key (kbd "C-x C-l") 'ido-mini)
-(ido-vertical-mode 1)
-
-;; is this being saved by desktop.el and actually being disabled here?
-;; (toggle-uniquify-buffer-names)
