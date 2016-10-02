@@ -146,16 +146,6 @@ omitted, use output from im/process-buffer-list."
 
 ;; (defun im/clean)
 
-;; pipeline
-
-;;                      recentf-list  -> sorted recentf -> color
-;;                                                             \
-;;                                                            combine -> ido-completing-read -> select from sorted buffer/recentf list
-;;                                                            /
-;; (buffer-list) -> buffer names -> sort -> add paths -> color
-;;                       |           |         |
-;;                (im/buffer-names)  |  (im/add-paths)
-;;                        (im/process-buffer-list)
 
 (defun ido-mini ()
   "A helm-mini replacement using Ido. Switch to a buffer or a
@@ -188,3 +178,14 @@ https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
                                bufs))
       (find-file (nth (- chosen-index (length bufs))
                       (im/recentf-list))))))
+
+;; pipeline
+
+;;                      recentf-list  -> sorted recentf -> color
+;;                                                             \
+;;                                                            combine -> ido-completing-read -> select from sorted buffer/recentf list
+;;                                                            /
+;; (buffer-list) -> buffer names -> sort -> add paths -> color
+;;                       |           |         |
+;;                (im/buffer-names)  |  (im/add-paths)
+;;                        (im/process-buffer-list)
