@@ -36,6 +36,28 @@
 ;;   values."
 ;;   (-map 'car (im/buffer-dc-alist-sorted)))
 
+
+;; TODO - make all operations on buffer list and recentf-list -
+;; sorting, addition of paths, coloring into their own single
+;; functions, and the functions user-definable via "-function"
+;; variables.
+
+;; TODO - colors!
+;; - dired buffers                  - major-mode
+;; - unsaved buffers                - buffer-modified-p
+;; - buffers modified outside emacs - verify-visited-file-modtime
+;; - buffers with deleted files     - buffer-file-name -> file-exists-p
+;; - and maybe the matched substring in the candidates
+
+;; TODO - clean input history, do not store file paths
+;; TODO - C-j to create buffer with the search string as name.
+
+;; add variables to
+;; - toggle displaying paths with buffer names
+
+(defface im/unsaved-file
+  '((t :inherit font-lock-type-face)))
+
 (defvar im/use-paths nil
   "If non-nil, display file paths of the associated files of
 buffers, where applicable (see function `im/add-paths').
@@ -58,7 +80,6 @@ Each should accept exactly one argument.")
   "Return a list of the name of all buffers returned
 by (buffer-list)."
   (-map 'buffer-name (buffer-list)))
-
 (defun ->list (var functions)
   "Assuming FUNCTIONS is a list of functions (FN1 FN2 FN3),
 return the result of (FN3 (FN2 (FN1 VAR)))"
@@ -76,13 +97,11 @@ the way ido-switch-buffer does."
              (el)
              (string-match-p "^ " el)))
     (let* ((bufs (im/buffer-names))
-
            ;; Remove buffers whose names start with a space
            (bufs-main       (-remove #'leading-space-p
                                      bufs))
            (bufs-space      (-filter #'leading-space-p
                                      bufs))
-
            ;; Put visible buffers at the end of list, in reverse order of appearance
            ;; (e.g. (vb1 b1 vb2 b2 ...) becomes (b1 b2 ... vb2 vb1))
            (bufs-wins-alist (-zip bufs-main
@@ -93,32 +112,12 @@ the way ido-switch-buffer does."
       (append
        (-map 'car bufs-wo-wins)
        (reverse (-map 'car bufs-with-wins))))))
-
 (defun im/recentf-list ()
   "Returns the contents of `recentf-list', with files being
 visited by a buffer placed at the end of the list."
   (append
    (-remove #'get-file-buffer recentf-list)
    (-filter #'get-file-buffer recentf-list)))
-
-;; TODO - make all operations on buffer list and recentf-list -
-;; sorting, addition of paths, coloring into their own single
-;; functions, and the functions user-definable via "-function"
-;; variables.
-
-;; TODO - colors!
-;; - dired buffers                  - major-mode
-;; - unsaved buffers                - buffer-modified-p
-;; - buffers modified outside emacs - verify-visited-file-modtime
-;; - buffers with deleted files     - buffer-file-name -> file-exists-p
-;; - and maybe the matched substring in the candidates
-
-;; TODO - clean input history, do not store file paths
-;; TODO - C-j to create buffer with the search string as name.
-
-;; add variables to
-;; - toggle displaying paths with buffer names
-
 (defun im/add-paths (&optional buflist)
   "Add paths to a list of buffer names. If BUFLIST is nil or
 omitted, use output from im/prep-buffer-list."
@@ -130,14 +129,12 @@ omitted, use output from im/prep-buffer-list."
                    (buffer-name)))
                (im/prep-buffer-list))
       bufs)))
-
 (defun im/color-recentf ()
   "Color output from im/recentf-list."
   (-map (lambda (el)
           (propertize el 'face 'ido-virtual))
         ;; recentf-list
         (im/recentf-list)))
-
 (defun im/color-buffer-names ()
   ""
   (-map (lambda (buffer)
@@ -165,11 +162,10 @@ https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
        (bufs-and-recentf     (append bufs-with-paths
                                      recentf-list-colored))
        (chosen-index
-        (-elem-index (ido-completing-read
-                      "Switch to buffer: "
-                      bufs-and-recentf
-                      nil nil nil
-                      'ido-buffer-history)
+        (-elem-index (ido-completing-read "Switch to buffer: "
+                                          bufs-and-recentf
+                                          nil nil nil
+                                          'ido-buffer-history)
                      bufs-and-recentf)))
 
     ;; is the chosen candidate in the buffer-list or recentf-list?
