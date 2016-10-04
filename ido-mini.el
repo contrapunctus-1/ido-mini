@@ -90,6 +90,55 @@ return the result of (FN3 (FN2 (FN1 VAR)))"
 ;; (->list 1 '((lambda (a) (+ a 1))
 ;;             (lambda (a) (+ a 2))
 ;;             (lambda (a) (+ a 3)))) ;; => 7
+(defun im/buffers-clean (buffer-names)
+  "Remove buffers whose names start with a space."
+  (cl-flet ((leading-space-p
+             (el)
+             (string-match-p "^ " el)))
+    (-remove #'leading-space-p buffer-names)))
+(defun im/buffers-bury-visible (buffer-names)
+  "Put visible buffers at the end of list, in reverse order of
+  appearance (e.g. (vb1 b1 vb2 b2 ...) becomes (b1 b2 ... vb2
+  vb1))"
+  (let* ((bufs-wins-alist (-zip buffer-names
+                                (-map 'get-buffer-window-list
+                                      buffer-names)))
+         (bufs-with-wins  (-filter 'cdr bufs-wins-alist))
+         (bufs-wo-wins    (-remove 'cdr bufs-wins-alist)))
+    (append
+     (-map 'car bufs-wo-wins)
+     (reverse (-map 'car bufs-with-wins)))))
+(defun im/buffers-color (buffer-names)
+  (-map (lambda (buffer-name)
+          (with-current-buffer buffer-name
+            (cond ;; ((and (buffer-file-name)
+             ;;       (buffer-modified-p))
+             ;;  (propertize ))
+             ((buffer-file-name)
+              (propertize buffer-name 'face 'font-lock-type-face))
+             ((equal major-mode 'dired-mode)
+              (propertize buffer-name 'face 'dired-directory))
+             ((string-match-p "^\\*" buffer-name)
+              (propertize buffer-name 'face 'italic))
+             (t buffer-name))))
+        (im/buffer-names)))
+(defun im/recentf-bury-visited (recentf-list)
+  "Returns the contents of `recentf-list', with files being
+visited by a buffer placed at the end of the list."
+  (append
+   (-remove #'get-file-buffer recentf-list)
+   (-filter #'get-file-buffer recentf-list)))
+(defun im/recentf-color (recentf-list)
+  "Color recentf-list."
+  (-map (lambda (el) (propertize el 'face 'ido-virtual))
+        recentf-list))
+(ido-completing-read
+ "Buffer:"
+ (append
+  (->list (im/buffer-names)
+          '(im/buffers-clean im/buffers-bury-visible im/buffers-color))
+  (->list recentf-list '(im/recentf-bury-visited
+                        im/recentf-color))))
 
 (defun im/prep-buffer-list ()
   "Return a list of buffer names using `buffer-list', processed
