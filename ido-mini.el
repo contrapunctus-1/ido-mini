@@ -69,7 +69,7 @@ return the result of (FN3 (FN2 (FN1 VAR)))"
 ;;             (lambda (a) (+ a 2))
 ;;             (lambda (a) (+ a 3)))) ;; => 7
 
-(defun im/process-buffer-list ()
+(defun im/prep-buffer-list ()
   "Return a list of buffer names using `buffer-list', processed
 the way ido-switch-buffer does."
   (cl-flet ((leading-space-p
@@ -121,14 +121,14 @@ visited by a buffer placed at the end of the list."
 
 (defun im/add-paths (&optional buflist)
   "Add paths to a list of buffer names. If BUFLIST is nil or
-omitted, use output from im/process-buffer-list."
-  (let ((bufs (if buflist buflist (im/process-buffer-list))))
+omitted, use output from im/prep-buffer-list."
+  (let ((bufs (if buflist buflist (im/prep-buffer-list))))
     (if im/use-paths
         (--map (with-current-buffer it
                  (if (buffer-file-name)
                      (format "%s <%s>" (buffer-name) (buffer-file-name))
                    (buffer-name)))
-               (im/process-buffer-list))
+               (im/prep-buffer-list))
       bufs)))
 
 (defun im/color-recentf ()
@@ -159,7 +159,7 @@ Based off code from wilfredh -
 https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
   (interactive)
   (let*
-      ((bufs                 (im/process-buffer-list))
+      ((bufs                 (im/prep-buffer-list))
        (bufs-with-paths      (im/add-paths bufs))
        (recentf-list-colored (im/color-recentf))
        (bufs-and-recentf     (append bufs-with-paths
@@ -188,4 +188,4 @@ https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
 ;; (buffer-list) -> buffer names -> sort -> add paths -> color
 ;;                       |           |         |
 ;;                (im/buffer-names)  |  (im/add-paths)
-;;                        (im/process-buffer-list)
+;;                        (im/prep-buffer-list)
