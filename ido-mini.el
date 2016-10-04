@@ -69,12 +69,13 @@ buffer uniquifying via `toggle-uniquify-buffer-names'.")
 (defvar im/buffer-list-functions nil
   "List of functions run sequentially over the output
 of `(buffer-list)', with the result of one being the input of the
-next (using `->list'). Each should accept exactly one argument.")
+next (using `->list'). Each should accept exactly one argument.
+`ido-mini' uses the resulting list for candidates.")
 (defvar im/recentf-list-functions nil
   "List of functions run sequentially over `recentf-list', with
 the result of one being the input of the next (using `->list').
-Each should accept exactly one argument.")
-
+Each should accept exactly one argument. `ido-mini' uses the
+resulting list for candidates.")
 
 (defun im/buffer-names ()
   "Return a list of the name of all buffers returned
