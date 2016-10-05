@@ -31,7 +31,8 @@
 ;; - and maybe the matched substring in the candidates
 
 ;; TODO - clean input history, do not store file paths
-;; TODO - C-j to create buffer with the search string as name.
+;; TODO - Mimic exact C-j (`ido-select-text') and RET behaviour
+;; (`ido-exit-minibuffer')
 
 ;; add variables to
 ;; - toggle displaying paths with buffer names
@@ -163,20 +164,18 @@ https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
                                        im/buffer-list-functions))
        (processed-recentf      (->list recentf-list
                                        im/recentf-list-functions))
-       (candidates             (append ;; bufs-with-paths recentf-list-colored
-                                processed-buffers processed-recentf))
-       (chosen-index
-        (-elem-index (ido-completing-read "Switch to buffer: "
-                                          candidates
-                                          nil nil nil
-                                          'ido-buffer-history)
-                     candidates)))
-    ;; what do we need outside the pipeline?
-    ;; sorted buffer list (switch)
-    ;; sorted recentf (open)
-    ;; is the chosen candidate in the buffer-list or recentf-list?
-    (if (< chosen-index buflength)
-        (switch-to-buffer (nth chosen-index buffers-sorted))
-      (find-file (nth (- chosen-index buflength)
-                      recentf-sorted)))))
-
+       (candidates             (append processed-buffers
+                                       processed-recentf))
+       (ido-choice             (ido-completing-read "Switch to buffer: "
+                                                    candidates
+                                                    nil nil nil
+                                                    'ido-buffer-history))
+       (chosen-index           (-elem-index ido-choice candidates)))
+    ;; if chosen-index is nil, we create a buffer with that name
+    (if chosen-index
+        ;; is the chosen candidate in the buffer-list or recentf-list?
+        (if (< chosen-index buflength)
+            (switch-to-buffer (nth chosen-index buffers-sorted))
+          (find-file (nth (- chosen-index buflength)
+                          recentf-sorted)))
+      (switch-to-buffer (get-buffer-create ido-choice)))))
