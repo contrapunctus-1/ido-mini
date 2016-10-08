@@ -59,7 +59,7 @@ been edited outside Emacs."
 not exist on disk."
   :group 'ido-mini)
 
-(defvar im/use-paths nil
+(defcustom im/use-paths nil
   "If non-nil, display file paths of the associated files of
 buffers, where applicable (see function `im/add-paths').
 Additionally, completion will search for buffer names as well as
@@ -68,18 +68,18 @@ their file paths.
 Users may also find it useful to set this to nil and to enable
 buffer uniquifying via `toggle-uniquify-buffer-names'.")
 
-(defvar im/buffer-list-functions '(im/buffer-names
-                                   im/buffers-clean
-                                   im/buffers-bury-visible
-                                   im/buffers-color)
+(defcustom im/buffer-list-functions '(im/buffer-names
+                                      im/buffers-clean
+                                      im/buffers-bury-visible
+                                      im/buffers-color)
   "List of functions run sequentially over the output
 of `(buffer-list)', with the result of one being the input of the
 next (using `->list'). Each should accept exactly one argument.
 The resulting list is used by `ido-mini' for completion
 candidates.")
 
-(defvar im/recentf-list-functions '(im/recentf-bury-visited
-                                    im/recentf-color)
+(defcustom im/recentf-list-functions '(im/recentf-bury-visited
+                                       im/recentf-color)
   "List of functions run sequentially over `recentf-list', with
 the result of one being the input of the next (using `->list').
 Each should accept exactly one argument. The resulting list is
@@ -138,7 +138,7 @@ by (buffer-list)."
          (propertize buffer-name 'face 'font-lock-type-face))
         ;; dired buffers
         ((with-current-buffer buffer
-           (equal major-mode 'dired-mode))
+           (derived-mode-p 'dired-mode))
          (propertize buffer-name 'face 'dired-directory))
         ;; TODO make this light gray
         ((string-match-p "^\\*" buffer-name)
@@ -195,7 +195,7 @@ https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
                                          im/buffers-clean
                                          im/buffers-bury-visible)))
        (recentf-sorted         (im/recentf-bury-visited recentf-list))
-       (buflength              (length buffers-sorted))
+       (buffer-count           (length buffers-sorted))
 
        (processed-buffers      (->list (buffer-list)
                                        im/buffer-list-functions))
@@ -211,8 +211,8 @@ https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
     ;; if chosen-index is nil, we create a buffer with that name
     (if chosen-index
         ;; is the chosen candidate in the buffer-list or recentf-list?
-        (if (< chosen-index buflength)
+        (if (< chosen-index buffer-count)
             (switch-to-buffer (nth chosen-index buffers-sorted))
-          (find-file (nth (- chosen-index buflength)
+          (find-file (nth (- chosen-index buffer-count)
                           recentf-sorted)))
       (switch-to-buffer (get-buffer-create ido-choice)))))
