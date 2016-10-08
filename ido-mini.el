@@ -1,12 +1,11 @@
-;;;; Listen up, fatuous serfs in the lands of Helm and Ido who know
-;;;; not the possibilities!
+;;;; Hark, fatuous serfs in the lands of Helm and Ido who know naught
+;;;; of what's possible!
 ;;;; <dramatic pause>
-;;;; <imperiously> Use `ido-mini' in your miserable init.el.
+;;;; <imperiously> Install `ido-mini' in your init.el.
 
-;;;; helm-mini's convenience of a single command to swich to buffers,
-;;;; open recentf files, and create new buffers, and the informatively
-;;;; colorful list of candidates, but with ido's smarter sorting and
-;;;; snappy speed.
+;;;; helm-mini's informatively-colored candidates list and convenience
+;;;; of a single command to swich to buffers, open recentf files, and
+;;;; create new buffers, and ido's smarter sorting and snappier speed.
 
 ;;;; Plus, some improvements of its own -
 ;;;; 1. If a recentf entry is already visited by a buffer, put the
@@ -20,6 +19,12 @@
 ;;;; No fifty commands to do the work of one, no uninformatively
 ;;;; colorless candidates list, no helm slowing down your init or
 ;;;; hanging your Emacs, and no more [Display not ready]!
+
+;;;; IMPORTANT
+;;;; Key customization is sadly NOT done the usual way in Ido.
+;;;; Instead, you write a function to change them (you want to use the
+;;;; `ido-completion-map') and add that to `ido-setup-hook'. See
+;;;; section 'Customization' in (find-library "ido")
 
 ;;;; thanks to wilfredh for the initial code that got me started -
 ;;;; https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d
