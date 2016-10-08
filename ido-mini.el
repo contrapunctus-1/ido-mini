@@ -29,13 +29,9 @@
 ;;;; thanks to wilfredh for the initial code that got me started -
 ;;;; https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d
 
-;; TODO - colors! see source of `helm-buffer--details'
-;; - unsaved buffers                - buffer-modified-p
-;; - buffers modified outside emacs - verify-visited-file-modtime - helm-buffer-saved-out
-;; - buffers with deleted files     - buffer-file-name -> file-exists-p
-;; - and maybe the matched substring in the candidates
-
-;; TODO - clean input history, do not store file paths
+;; TODO - color the matched substring in the candidates?
+;; TODO - store only search terms in input history, not the selected
+;;        buffer names/file paths
 ;; TODO - Mimic exact C-j (`ido-select-text') and RET behaviour
 ;; (`ido-exit-minibuffer')
 
@@ -44,9 +40,24 @@
 
 ;;;; VARIABLES ----
 
-(defface im/unsaved-file
-  '((t :inherit font-lock-type-face))
-  "Face used by `ido-mini' to indicate unsaved files.")
+(defgroup ido-mini nil
+  "Variables for ido-mini completion library.")
+
+(defface im/unsaved-buffer
+  '((t (:foreground "orange")))
+  "Face used by `ido-mini' to indicate buffers which have
+been edited but not saved."
+  :group 'ido-mini)
+(defface im/buffer-changed
+  '((t (:foreground "red" :background "black")))
+  "Face used by `ido-mini' to indicate buffers whose file has
+been edited outside Emacs."
+  :group 'ido-mini)
+(defface im/buffer-file-missing
+  '((t (:foreground "Indianred2")))
+  "Face used by `ido-mini' to indicate buffers whose file does
+not exist on disk."
+  :group 'ido-mini)
 
 (defvar im/use-paths nil
   "If non-nil, display file paths of the associated files of
@@ -111,14 +122,25 @@ by (buffer-list)."
   (-map
    (lambda (buffer-name)
      (let ((buffer (get-buffer buffer-name)))
-       (cond ;; ((and (buffer-file-name)
-        ;;       (buffer-modified-p))
-        ;;  (propertize ))
+       (cond
+        ((let ((bfn (buffer-file-name buffer)))
+           (and bfn (not (file-exists-p bfn))))
+         (propertize buffer-name 'face 'im/buffer-file-missing))
+        ;; buffers with unsaved files
+        ((and (buffer-file-name buffer)
+              (buffer-modified-p buffer))
+         (propertize buffer-name 'face 'im/unsaved-buffer))
+        ;; buffer modified outside emacs
+        ((not (verify-visited-file-modtime buffer))
+         (propertize buffer-name 'face 'im/buffer-changed))
+        ;; buffers with files
         ((buffer-file-name buffer)
          (propertize buffer-name 'face 'font-lock-type-face))
+        ;; dired buffers
         ((with-current-buffer buffer
            (equal major-mode 'dired-mode))
          (propertize buffer-name 'face 'dired-directory))
+        ;; TODO make this light gray
         ((string-match-p "^\\*" buffer-name)
          (propertize buffer-name 'face 'italic))
         (t buffer-name))))
@@ -134,13 +156,23 @@ visited by a buffer placed at the end of the list."
   "Color recentf-list."
   (-map (lambda (el) (propertize el 'face 'ido-virtual))
         recentf))
-;; (ido-completing-read
-;;  "Buffer:"
-;;  (append
-;;   (->list (im/buffer-names)
-;;           '(im/buffers-clean im/buffers-bury-visible im/buffers-color))
-;;   (->list recentf-list '(im/recentf-bury-visited
-;;                         im/recentf-color))))
+
+(defun im/select-text (ido-choice)
+  "Mimic superficial behaviour of `ido-select-text'. If there is
+an exact match for the search string, select it, else create a
+new buffer using the search string as the name.")
+(defun im/exit-minibuffer (ido-choice)
+  "Mimic superficial behaviour of `ido-exit-minibuffer'. If there
+is any match for the search string, select it, else print
+[Confirm] and after another RET, create a buffer using the search
+string as the name.")
+
+;; (ido-completing-read "Buffer:"
+;;                      (append (->list (buffer-list)
+;;                                      im/buffer-list-functions)
+;;                              (->list recentf-list
+;;                                      im/recentf-list-functions)))
+
 ;;;; IDO-MINI ----
 
 (defun ido-mini ()
