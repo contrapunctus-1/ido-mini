@@ -166,6 +166,8 @@ new buffer using the search string as the name.")
 is any match for the search string, select it, else print
 [Confirm] and after another RET, create a buffer using the search
 string as the name.")
+(defun im/save-search-string ()
+  "Save search string from ido-completing-read into history.")
 
 ;; (ido-completing-read "Buffer:"
 ;;                      (append (->list (buffer-list)
