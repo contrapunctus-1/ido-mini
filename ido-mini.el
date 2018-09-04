@@ -225,3 +225,5 @@ https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
           (find-file (nth (- chosen-index buffer-count)
                           recentf-sorted)))
       (switch-to-buffer (get-buffer-create ido-choice)))))
+
+(provide 'ido-mini)
