@@ -22,18 +22,23 @@
 
 ;;;; IMPORTANT
 ;;;; Key customization is sadly NOT done the usual way in Ido.
-;;;; Instead, you write a function to change them (you want to use the
-;;;; `ido-completion-map') and add that to `ido-setup-hook'. See
-;;;; section 'Customization' in (find-library "ido")
+;;;; Instead, you write a function to change keybindings (you want to
+;;;; use the `ido-completion-map') and add that to `ido-setup-hook'.
+;;;; See section 'Customization' in (find-library "ido")
 
 ;;;; thanks to wilfredh for the initial code that got me started -
 ;;;; https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d
 
-;; TODO - color the matched substring in the candidates?
-;; TODO - store only search terms in input history, not the selected
-;;        buffer names/file paths
-;; TODO - Mimic exact C-j (`ido-select-text') and RET behaviour
-;; (`ido-exit-minibuffer')
+;; TODO
+;; 1. When called twice in succession, quit ido-mini
+;; 2. color the matched substring in the candidates?
+;; 3. store only search terms in input history, not the selected
+;;    buffer names/file paths
+;; 4. Mimic exact C-j (`ido-select-text') and RET behaviour
+;;    (`ido-exit-minibuffer')
+;; 5. What if we search for files (perhaps only in user-specified
+;;    directories, when provided) when there are no matches in the
+;;    buffer list as well as in recentf?
 
 ;; add variables to
 ;; - toggle displaying paths with buffer names
@@ -193,9 +198,11 @@ https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
   (interactive)
   (let*
       ((buffers-sorted         (->list (buffer-list)
-                                       '(im/buffer-names
-                                         im/buffers-clean
-                                         im/buffers-bury-visible)))
+                                       ;; '(im/buffer-names
+                                       ;;   im/buffers-clean
+                                       ;;   im/buffers-bury-visible)
+                                       im/buffer-list-functions
+                                       ))
        (recentf-sorted         (im/recentf-bury-visited recentf-list))
        (buffer-count           (length buffers-sorted))
 
@@ -205,10 +212,10 @@ https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
                                        im/recentf-list-functions))
        (candidates             (append processed-buffers
                                        processed-recentf))
-       (ido-choice             (ido-completing-read "Switch to buffer: "
-                                                    candidates
-                                                    nil nil nil
-                                                    'ido-buffer-history))
+       (ido-choice             (completing-read "Switch to buffer: "
+                                                candidates
+                                                nil nil nil
+                                                'ido-buffer-history))
        (chosen-index           (-elem-index ido-choice candidates)))
     ;; if chosen-index is nil, we create a buffer with that name
     (if chosen-index
