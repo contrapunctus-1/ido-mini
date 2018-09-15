@@ -5,6 +5,7 @@ A [helm-mini](https://github.com/emacs-helm/helm) in ido
 Ido's -
 - smarter sorting
 - snappier speed
+
 meets helm-mini's -
 - informatively-colored candidates list
 - convenience of a single command to switch to buffers, open recentf
@@ -42,10 +43,11 @@ you write a function to change keybindings (you want to use
 
 ## Contact
 Contact the creator and other Emacs users in the Emacs room on the Jabber network - [xmpp:emacs@salas.suchat.org?join](xmpp:emacs@salas.suchat.org?join)
+
 (For help in getting started with Jabber, [click here](https://xmpp.org/getting-started/))
 
 ## License
-timeclock-ui is released under your choice of [CC0](https://creativecommons.org/publicdomain/zero/1.0/), [Unlicense](https://unlicense.org/), and [WTFPL](http://www.wtfpl.net/).
+ido-mini is released under your choice of [CC0](https://creativecommons.org/publicdomain/zero/1.0/), [Unlicense](https://unlicense.org/), and [WTFPL](http://www.wtfpl.net/).
 
 ## Thanks
 wasamasa, bpalmer and #emacs in general for all their help and support
