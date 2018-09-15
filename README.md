@@ -12,7 +12,7 @@ meets helm-mini's -
 
 Plus, some improvements of its own -
 1. If a recentf entry is already visited by a buffer, put the entry at
-   the end of the candidates list.
+   the end of the (recentf?) candidates list.
 2. (planned) tweak `im/use-paths` to search and display
    not just buffer names but also their file paths, wherever
    applicable.
@@ -38,6 +38,9 @@ you write a function to change keybindings (you want to use
    directories, when provided) when there are no matches in the
    buffer list as well as in recentf?
 6. Add animated
+7. Add indicator if flx-ido-mode is enabled
+8. Stop using abbreviated prefixes
+9. Add tests
 
 ## Thanks
 Thanks to wilfredh for the initial code that got me started -

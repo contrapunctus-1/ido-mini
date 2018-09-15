@@ -1,4 +1,3 @@
-
 ;; add variables to
 ;; - toggle displaying paths with buffer names
 
