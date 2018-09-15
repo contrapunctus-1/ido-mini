@@ -13,9 +13,8 @@ meets helm-mini's -
 Plus, some improvements of its own -
 1. If a recentf entry is already visited by a buffer, put the entry at
    the end of the (recentf?) candidates list.
-2. (planned) tweak `im/use-paths` to search and display
-   not just buffer names but also their file paths, wherever
-   applicable.
+2. (planned) tweak `ido-mini-use-paths` to search and display not just
+   buffer names but also their file paths, wherever applicable.
 3. (planned) show documentation of functions from smex, akin to C-j in
    helm-M-x
 
@@ -30,17 +29,16 @@ you write a function to change keybindings (you want to use
 ## TODO
 1. When called twice in succession, quit ido-mini
 2. color the matched substring in the candidates?
-3. store only search terms in input history, not the selected
-   buffer names/file paths
+3. store only search terms in input history, not the selected buffer
+   names/file paths
 4. Mimic exact C-j (`ido-select-text`) and RET behaviour
    (`ido-exit-minibuffer`)
 5. What if we search for files (perhaps only in user-specified
-   directories, when provided) when there are no matches in the
-   buffer list as well as in recentf?
+   directories, when provided) when there are no matches in the buffer
+   list as well as in recentf?
 6. Add animated
 7. Add indicator if flx-ido-mode is enabled
-8. Stop using abbreviated prefixes
-9. Add tests
+8. Add tests
 
 ## Thanks
 Thanks to wilfredh for the initial code that got me started -
