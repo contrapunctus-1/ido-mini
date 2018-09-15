@@ -6,8 +6,8 @@ Ido's -
 - smarter sorting
 - snappier speed
 meets helm-mini's -
-- informatively-colored candidates list ()
-- convenience of a single command to swich to buffers, open recentf
+- informatively-colored candidates list
+- convenience of a single command to switch to buffers, open recentf
   files, and create new buffers.
 
 Plus, some improvements of its own -
@@ -40,6 +40,15 @@ you write a function to change keybindings (you want to use
 7. Add indicator if flx-ido-mode is enabled
 8. Add tests
 
+## Contact
+Contact the creator and other Emacs users in the Emacs room on the Jabber network - [xmpp:emacs@salas.suchat.org?join](xmpp:emacs@salas.suchat.org?join)
+(For help in getting started with Jabber, [click here](https://xmpp.org/getting-started/))
+
+## License
+timeclock-ui is released under your choice of [CC0](https://creativecommons.org/publicdomain/zero/1.0/), [Unlicense](https://unlicense.org/), and [WTFPL](http://www.wtfpl.net/).
+
 ## Thanks
-Thanks to wilfredh for the initial code that got me started -
+wasamasa, bpalmer and #emacs in general for all their help and support
+
+wilfredh for the initial code that got me started -
 https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d
