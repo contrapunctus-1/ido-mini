@@ -1,3 +1,6 @@
+(require 'dash)
+(require 'ido)
+
 ;; add variables to
 ;; - toggle displaying paths with buffer names
 
