@@ -9,8 +9,8 @@
 ;; - toggle displaying paths with buffer names
 
 (defun ->list (var functions)
-  "Assuming FUNCTIONS is a list of functions (FN1 FN2 FN3),
-return the result of (FN3 (FN2 (FN1 VAR)))"
+  "Assuming FUNCTIONS is a list of functions (FN-1 FN-2 ... FN-N),
+return the result of (FN-N ... (FN-2 (FN-1 VAR)))"
   ;; (--reduce-from (funcall it acc) var functions)
   (dolist (fn functions)
     (setq var (funcall fn var)))
