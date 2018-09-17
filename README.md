@@ -26,7 +26,8 @@ Plus, some improvements of its own -
 
 `ido-mini` assumes you use Emacs' built-in `recentf-mode`. If not, simply add `(recentf-mode)` to your init.
 
-## Key customization
+## Customization
+### Keys
 **IMPORTANT**
 
 In Ido, key customization is sadly NOT done the usual way. Instead,
@@ -42,6 +43,20 @@ For fuzzy matching, install the flex-ido package. It's not always useful, you ca
   (setq flx-ido-mode (not flx-ido-mode)))
 ```
 and bind it to a key.
+
+### ido-mini behaviour
+ido-mini tries to let the user modify core behaviour without
+redefining entire functions. This is done by providing variables which
+hold lists of functions (like typical Emacs hooks).
+
+The functions are run in sequence, and each accepting the output of
+the previous. Changing the functions in the list or even the order of
+the functions will change behaviour.
+
+Currently, there are two such variables -
+`ido-mini-buffer-list-functions` and
+`ido-mini-recentf-list-functions`. ido-mini uses the output of these
+functions to derive the final list of candidates.
 
 ## Known issues
 flx-ido and recent versions of ido override ido-mini's candidate coloring. As of now it's a choice between flx-ido/ido's matched string highlighting, and ido-mini's informatively colored candidates. If you'd rather have the latter, add `(setq flx-ido-use-faces nil)` and `(setq ido-use-faces nil)` to your init respectively.
@@ -60,6 +75,8 @@ flx-ido and recent versions of ido override ido-mini's candidate coloring. As of
 7. Add indicator if flx-ido-mode is enabled
 8. Add tests
 9. Don't fail if recentf-list is nil
+10. Create user-redefinable function to return final list of
+    candidates.
 
 ## Contributions and contact
 Feedback and MRs very welcome. 🙂
