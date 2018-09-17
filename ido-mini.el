@@ -1,57 +1,12 @@
+(require 'recentf)
 (require 'dash)
 (require 'ido)
 
+(require 'ido-mini-custom)
+(require 'ido-mini-faces)
+
 ;; add variables to
 ;; - toggle displaying paths with buffer names
-
-;;;; VARIABLES ----
-
-(defgroup ido-mini nil
-  "Variables for ido-mini completion library.")
-
-(defface ido-mini-unsaved-buffer
-  '((t (:foreground "orange")))
-  "Face used by `ido-mini' to indicate buffers which have
-been edited but not saved."
-  :group 'ido-mini)
-(defface ido-mini-buffer-changed
-  '((t (:foreground "red" :background "black")))
-  "Face used by `ido-mini' to indicate buffers whose file has
-been edited outside Emacs."
-  :group 'ido-mini)
-(defface ido-mini-buffer-file-missing
-  '((t (:foreground "Indianred2")))
-  "Face used by `ido-mini' to indicate buffers whose file does
-not exist on disk."
-  :group 'ido-mini)
-
-(defcustom ido-mini-use-paths nil
-  "If non-nil, display file paths of the associated files of
-buffers, where applicable (see function `ido-mini-add-paths').
-Additionally, completion will search for buffer names as well as
-their file paths.
-
-Users may also find it useful to set this to nil and to enable
-buffer uniquifying via `toggle-uniquify-buffer-names'.")
-
-(defcustom ido-mini-buffer-list-functions '(ido-mini-buffer-names
-                                            ido-mini-buffers-clean
-                                            ido-mini-buffers-bury-visible
-                                            ido-mini-buffers-color)
-  "List of functions run sequentially over the output
-of `(buffer-list)', with the result of one being the input of the
-next (using `->list'). Each should accept exactly one argument.
-The resulting list is used by `ido-mini' for completion
-candidates.")
-
-(defcustom ido-mini-recentf-list-functions '(ido-mini-recentf-bury-visited
-                                       ido-mini-recentf-color)
-  "List of functions run sequentially over `recentf-list', with
-the result of one being the input of the next (using `->list').
-Each should accept exactly one argument. The resulting list is
-used by `ido-mini' for completion candidates.")
-
-;;;; LIBRARY FUNCTIONS ----
 
 (defun ->list (var functions)
   "Assuming FUNCTIONS is a list of functions (FN1 FN2 FN3),
@@ -66,12 +21,13 @@ return the result of (FN3 (FN2 (FN1 VAR)))"
 by (buffer-list)."
   (let ((buffer-list (if buffer-list buffer-list (buffer-list))))
     (-map 'buffer-name buffer-list)))
+
 (defun ido-mini-buffers-clean (buffer-names)
   "Remove buffers whose names start with a space."
-  (cl-flet ((leading-space-p
-             (el)
-             (string-match-p "^ " el)))
+  (cl-flet ((leading-space-p (el)
+                             (string-match-p "^ " el)))
     (-remove #'leading-space-p buffer-names)))
+
 (defun ido-mini-buffers-bury-visible (buffer-names)
   "Put visible buffers at the end of list, in reverse order of
   appearance (e.g. (vb1 b1 vb2 b2 ...) becomes (b1 b2 ... vb2
@@ -84,32 +40,33 @@ by (buffer-list)."
     (append
      (-map 'car bufs-wo-wins)
      (reverse (-map 'car bufs-with-wins)))))
+
 (defun ido-mini-buffers-color (buffer-names)
   (-map
    (lambda (buffer-name)
      (let ((buffer (get-buffer buffer-name)))
-       (cond
-        ((let ((bfn (buffer-file-name buffer)))
-           (and bfn (not (file-exists-p bfn))))
-         (propertize buffer-name 'face 'ido-mini-buffer-file-missing))
-        ;; buffers with unsaved files
-        ((and (buffer-file-name buffer)
-              (buffer-modified-p buffer))
-         (propertize buffer-name 'face 'ido-mini-unsaved-buffer))
-        ;; buffer modified outside emacs
-        ((not (verify-visited-file-modtime buffer))
-         (propertize buffer-name 'face 'ido-mini-buffer-changed))
-        ;; buffers with files
-        ((buffer-file-name buffer)
-         (propertize buffer-name 'face 'font-lock-type-face))
-        ;; dired buffers
-        ((with-current-buffer buffer
-           (derived-mode-p 'dired-mode))
-         (propertize buffer-name 'face 'dired-directory))
-        ;; TODO make this light gray
-        ((string-match-p "^\\*" buffer-name)
-         (propertize buffer-name 'face 'italic))
-        (t buffer-name))))
+       (cond ((let ((bfn (buffer-file-name buffer)))
+                (and bfn
+                     (not (file-exists-p bfn))))
+              (propertize buffer-name 'face 'ido-mini-buffer-file-missing))
+             ;; buffers with unsaved files
+             ((and (buffer-file-name buffer)
+                   (buffer-modified-p buffer))
+              (propertize buffer-name 'face 'ido-mini-unsaved-buffer))
+             ;; buffer modified outside emacs
+             ((not (verify-visited-file-modtime buffer))
+              (propertize buffer-name 'face 'ido-mini-buffer-changed))
+             ;; buffers with files
+             ((buffer-file-name buffer)
+              (propertize buffer-name 'face 'font-lock-type-face))
+             ;; dired buffers
+             ((with-current-buffer buffer
+                (derived-mode-p 'dired-mode))
+              (propertize buffer-name 'face 'dired-directory))
+             ;; TODO make this light gray
+             ((string-match-p "^\\*" buffer-name)
+              (propertize buffer-name 'face 'italic))
+             (t buffer-name))))
    buffer-names))
 
 (defun ido-mini-recentf-bury-visited (recentf)
@@ -118,6 +75,7 @@ visited by a buffer placed at the end of the list."
   (append
    (-remove #'get-file-buffer recentf)
    (-filter #'get-file-buffer recentf)))
+
 (defun ido-mini-recentf-color (recentf)
   "Color recentf-list."
   (-map (lambda (el) (propertize el 'face 'ido-virtual))
@@ -127,11 +85,13 @@ visited by a buffer placed at the end of the list."
   "Mimic superficial behaviour of `ido-select-text'. If there is
 an exact match for the search string, select it, else create a
 new buffer using the search string as the name.")
+
 (defun ido-mini-exit-minibuffer (ido-choice)
   "Mimic superficial behaviour of `ido-exit-minibuffer'. If there
 is any match for the search string, select it, else print
 [Confirm] and after another RET, create a buffer using the search
 string as the name.")
+
 (defun ido-mini-save-search-string ()
   "Save search string from ido-completing-read into history.")
 
@@ -159,11 +119,7 @@ https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d"
   (interactive)
   (let*
       ((buffers-sorted         (->list (buffer-list)
-                                       ;; '(ido-mini-buffer-names
-                                       ;;   ido-mini-buffers-clean
-                                       ;;   ido-mini-buffers-bury-visible)
-                                       ido-mini-buffer-list-functions
-                                       ))
+                                       ido-mini-buffer-list-functions))
        (recentf-sorted         (ido-mini-recentf-bury-visited recentf-list))
        (buffer-count           (length buffers-sorted))
 
