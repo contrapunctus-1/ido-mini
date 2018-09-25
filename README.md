@@ -86,11 +86,13 @@ Contact the creator and other Emacs users in the Emacs room on the Jabber networ
 (For help in getting started with Jabber, [click here](https://xmpp.org/getting-started/))
 
 ## License
-ido-mini is released under your choice of [CC0](https://creativecommons.org/publicdomain/zero/1.0/), [Unlicense](https://unlicense.org/), and [WTFPL](http://www.wtfpl.net/).
+ido-mini is released under your choice of [Unlicense](https://unlicense.org/) and the [WTFPL](http://www.wtfpl.net/).
+
+(See files [LICENSE](LICENSE) and [LICENSE.1](LICENSE.1).
 
 ## Thanks
 wilfredh for the initial code that got me started -
-https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d
+<https://gist.github.com/Wilfred/31e8e0b24e3820c24850920444dd941d>
 
 wasamasa, bpalmer and #emacs in general for all their help and support
 
