@@ -24,18 +24,14 @@ Plus, some improvements of its own -
 
 `ido-vertical-mode` can be used to view candidates vertically.
 
-`ido-mini` assumes you use Emacs' built-in `recentf-mode`. If not, simply add `(recentf-mode)` to your init.
+`ido-mini` uses Emacs' built-in `recentf-mode` for recent files. If
+not, simply add `(recentf-mode)` to your init.
 
 ## Customization
 ### Keys
-**IMPORTANT**
+Add your keybindings to `ido-common-completion-map`. See section 'Customization' in (find-library "ido")
 
-In Ido, key customization is sadly NOT done the usual way. Instead,
-you write a function to change keybindings (you want to use
-`ido-completion-map`) and add that to `ido-setup-hook'. See section
-'Customization' in (find-library "ido")
-
-For fuzzy matching, install the flex-ido package. It's not always useful, you can define a command to toggle it -
+For fuzzy matching, install the flex-ido package. It's not always useful, so you may want to define a command to toggle it -
 ```
 (defun my/ido-toggle-flex ()
   "Toggle the value of `ido-enable-flex-matching'."
