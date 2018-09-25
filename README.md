@@ -73,6 +73,12 @@ flx-ido and recent versions of ido override ido-mini's candidate coloring. As of
 9. Don't fail if recentf-list is nil
 10. Create user-redefinable function to return final list of
     candidates.
+    - Why not modularize candidate sources themselves? That way, users can customize _what_ the candidates are as well as _how_ they're prioritized. (...doesn't that effectively make this helm, then?)
+      - Maybe a macro to define a candidate source, automatically defining the filter function variable for it.
+11. Create global variable to store prompt function
+    (ido-completing-read) and to permit users to change it.
+12. I'm often opening certain folders. It'd be nice if ido-mini
+    allowed me to recall them quickly, too.
 
 ## Contributions and contact
 Feedback and MRs very welcome. 🙂
